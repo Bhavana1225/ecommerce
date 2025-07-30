@@ -107,10 +107,10 @@
       }
 
       cart.forEach(item => {
-        const product = products.find(p => p.name === item.id);
-        if (!product) return; // Skip if no matching product found
+        const product = products.find(p => p.id === item.id);
+        if (!product) return;
 
-        const itemTotal = item.price * item.quantity;
+        const itemTotal = product.price * item.quantity;
         total += itemTotal;
 
         const div = document.createElement("div");
@@ -119,7 +119,7 @@
           <img src="${product.image}" alt="${product.name}" />
           <div class="cart-item-details">
             <strong>${product.name}</strong><br />
-            Price: ₹${item.price}
+            Price: ₹${product.price}
           </div>
           <div class="cart-item-controls">
             <button class="qty-btn" data-action="decrease" data-id="${item.id}">−</button>
@@ -137,10 +137,10 @@
 
       totalEl.textContent = `Total: ₹${total.toFixed(2)}`;
 
-      // Add event listeners for buttons
+      // Event listeners for quantity buttons
       container.querySelectorAll(".qty-btn").forEach(button => {
         button.addEventListener("click", () => {
-          const id = button.getAttribute("data-id");
+          const id = parseInt(button.getAttribute("data-id"));
           const action = button.getAttribute("data-action");
           let cart = JSON.parse(localStorage.getItem("cart")) || [];
           const item = cart.find(i => i.id === id);
@@ -160,9 +160,10 @@
         });
       });
 
+      // Event listeners for remove buttons
       container.querySelectorAll(".remove-btn").forEach(button => {
         button.addEventListener("click", () => {
-          const id = button.getAttribute("data-id");
+          const id = parseInt(button.getAttribute("data-id"));
           let cart = JSON.parse(localStorage.getItem("cart")) || [];
           cart = cart.filter(i => i.id !== id);
           localStorage.setItem("cart", JSON.stringify(cart));
@@ -172,7 +173,7 @@
       });
     }
 
-    // Initial render
+    // Initialize on page load
     updateCartCount();
     renderCart();
   </script>
