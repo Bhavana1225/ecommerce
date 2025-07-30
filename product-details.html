@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Product Details - Bhavana's Store</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    nav {
+      margin-bottom: 30px;
+    }
+    nav a {
+      margin-right: 20px;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: #ff4c68;
+    }
+    .product-details {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .product-details img {
+      max-width: 350px;
+      width: 100%;
+      border-radius: 15px;
+      object-fit: contain;
+    }
+    .product-info {
+      flex: 1;
+      min-width: 250px;
+    }
+    .product-info h2 {
+      margin-bottom: 10px;
+      font-size: 2rem;
+    }
+    .product-info p.price {
+      font-weight: bold;
+      font-size: 1.4rem;
+      color: #ff4c68;
+      margin-bottom: 20px;
+    }
+    .product-info p.description {
+      font-size: 1rem;
+      margin-bottom: 30px;
+    }
+    .product-info button {
+      background-color: #ff4c68;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .product-info button:hover {
+      background-color: #e93c5a;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="cart.html">🛒 View Cart (<span id="cart-count">0</span>)</a>
+  </nav>
+
+  <section class="product-details">
+    <img id="productImage" src="" alt="Product Image" />
+    <div class="product-info">
+      <h2 id="productName">Product Name</h2>
+      <p class="price" id="productPrice">₹0</p>
+      <p class="description" id="productDescription">Product description here.</p>
+      <button id="addToCartBtn">Add to Cart</button>
+    </div>
+  </section>
+
+  <script src="data.js"></script>
+  <script>
+    // Function to get query params
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    // Get product ID from URL
+    const productId = parseInt(getQueryParam('id'), 10);
+
+    const productImage = document.getElementById("productImage");
+    const productName = document.getElementById("productName");
+    const productPrice = document.getElementById("productPrice");
+    const productDescription = document.getElementById("productDescription");
+    const addToCartBtn = document.getElementById("addToCartBtn");
+    const cartCount = document.getElementById("cart-count");
+
+    function loadProduct() {
+      if (isNaN(productId)) {
+        productName.textContent = "Invalid Product ID";
+        addToCartBtn.disabled = true;
+        return;
+      }
+
+      const product = products.find(p => p.id === productId);
+      if (!product) {
+        productName.textContent = "Product Not Found";
+        addToCartBtn.disabled = true;
+        return;
+      }
+
+      productImage.src = product.image;
+      productImage.alt = product.name;
+      productName.textContent = product.name;
+      productPrice.textContent = "₹" + product.price;
+      productDescription.textContent = product.description;
+    }
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+      if (cartCount) cartCount.textContent = totalQuantity;
+    }
+
+    function addToCart() {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const existingItem = cart.find(item => item.id === productId);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({ id: productId, quantity: 1 });
+      }
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCartCount();
+      alert("Added to cart!");
+    }
+
+    loadProduct();
+    updateCartCount();
+
+    addToCartBtn.addEventListener("click", addToCart);
+  </script>
+</body>
+</html>
+
